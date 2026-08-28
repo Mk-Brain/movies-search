@@ -1,36 +1,26 @@
-import { useState } from 'react'
-import { MovieModal } from './MovieModal';
+import type { Movie } from '../models/Movie';
 
-export const MovieCard = () => {
-  const [isOpen, setIsOpen] = useState(false);
+import SalaCine from '../assets/krists-luhaers-AtPWnYNDJnM-unsplash.jpg'
 
-    //ouverture et fermeture du dialog
-    const handleOpen = () => {
-        setIsOpen(true);
-    };
-
-    const handleClose = () => {
-        setIsOpen(false);
-    };
-
-    
-
+export const MovieCard = ({ movie, handleOpen }: { movie: Movie, handleOpen:() => void }) => {
 
     return (
-        <div className="w-1/7 h-30 m-1 border rounded-lg overflow-hidden relative cursor-pointer" onClick={handleOpen}>
-            <div className="w-full h-full flex flex-col items-center justify-center gap-1 bg-gray-950/0  text-sm font-semibold hover:bg-gray-950/80 text-transparent hover:text-gray-100 transition-all duration-300 absolute overflow-auto" >
-                <p className="text-center ">{}</p>
-                <p className="text-center ">{}</p>
-                <p className="text-center ">{}</p>
-                <p className="text-center ">{}</p>
+       
+        <div 
+        className="w-full h-70 m-1 p-2  rounded-xl cursor-pointer flex flex-col
+        hover:border-3 hover:border-pink-800 hover:scale-105 transition-all duration-300
+        shadow-[0_2px_8px] shadow-black/70 hover:shadow-[0_2px_12px] hover:shadow-pink-700/50" 
+        onClick={handleOpen}>
+            <img
+                src={SalaCine}
+                alt={movie.Title}
+                className="w-full h-3/4 object-cover rounded-lg"
+            />
+            <div className="w-full  flex flex-col items-start justify-center  bg-gray-950/0  text-sm font-semibold " >
+                <p className="text-white">{movie.Title}</p>
+                <p className="text-gray-400">{movie.Year}</p>
             </div>
-
-            
-            <>
-                <MovieModal isOpen={isOpen} onClose={handleClose} title={""} >
-                    <div></div>
-                </MovieModal>
-            </>
         </div>
+    
     )
 }
