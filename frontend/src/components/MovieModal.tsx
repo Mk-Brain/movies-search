@@ -51,7 +51,7 @@ export function MovieModal({ isOpen, onClose,  movie }: { isOpen: boolean, onClo
       ref={dialogRef}
       onClose={onClose} // Déclenché nativement si l'utilisateur appuie sur Échap
       onClick={handleBackdropClick}
-      className="top-0 z-50 w-screen h-screen bg-transparent backdrop-blur-xs flex open:flex items-center justify-center m-0"
+      className="top-0 z-50 w-screen h-screen bg-transparent backdrop-blur-xs hidden open:flex items-center justify-center m-0"
     >
       <div
         className="flex flex-col w-[60vw] h-[80vh] rounded-xl
