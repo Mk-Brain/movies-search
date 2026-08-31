@@ -4,7 +4,7 @@ import type { Movie } from '../models/Movie';
 
 
 
-const API_BASE_URL = import.meta.env.BACKEND_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
 export function usePopularMovie() {
     const [movies, setMovies] = useState<Movie[]>([]);
@@ -13,10 +13,13 @@ export function usePopularMovie() {
 
     useEffect(() => {
         const url = `${API_BASE_URL}/movies/popular`;
-
+        console.log(url);
+        
         axios.get<Movie[]>(url)
             .then((response) => {
                 setMovies(response.data);
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                
                 console.log(response.data);
                 
             })

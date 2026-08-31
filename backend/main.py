@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
 origins = [
     "http://localhost:5173",  # Port par défaut de Vite / React en dev
     "http://127.0.0.1:5173",
-    # "https://mon-app.vercel.app",  # Ajoutez l'URL de prod de votre front ici
+    "https://cine-explorer-omega.vercel.app/",  # Ajoutez l'URL de prod de votre front ici
 ]
 
 
