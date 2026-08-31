@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Box } from "@mui/material";
 
 export const Avatar = ({ picture, width, height }: { picture: string, width: number, height: number }) => {
