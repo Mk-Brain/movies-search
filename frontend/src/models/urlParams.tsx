@@ -1,10 +1,10 @@
 export interface URLParams {
-    i: string
+    i: string | null
     t: string
-    type: Type
-    y: string
-    plot: Plot
-    r: R
+    type: Type | null
+    y: string | null
+    plot: Plot | null
+    r: R | null
 
 }
 

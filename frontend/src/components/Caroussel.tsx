@@ -1,19 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import SalaCine from '../assets/krists-luhaers-AtPWnYNDJnM-unsplash.jpg'
 import { BtnNeon } from "./BtnNeon";
-type Movie = {
-    title: string;
-    badge: string;
-    image: string;
-};
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
+import type { Movie } from "../models/Movie";
+import { MovieModal } from "./MovieModal";
 
-const movies: Movie[] = [
-    { title: "CinéExplorer", badge: "DUNG. DART TIAD", image: "/images/hero-1.jpg" },
-    { title: "Oppenheimer", badge: "NOUVEAUTÉ", image: "/images/hero-2.jpg" },
-    { title: "Dune Part Two", badge: "TENDANCE", image: "/images/hero-3.jpg" },
-];
+
 
 export const Hero = () => {
+    const movies = useSelector((state: RootState) => state.movies.popularMovies)
     const [current, setCurrent] = useState(0);
     // Durée de l'effet Ken Burns en secondes, pilotée par le slider (min 4s, max 20s)
     const [duration, setDuration] = useState(10);
@@ -28,36 +24,55 @@ export const Hero = () => {
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [duration]);
+    }, [duration, movies.length]);
 
-    const movie = movies[current];
+    console.log(movies[current]);
+    
+    const movie: Movie  = movies[current] ?? null;
+
+    const [isOpen, setIsOpen] = useState(false);
+
+  //ouverture et fermeture du dialog
+  const handleOpen = () => {
+    setIsOpen(true);
+    console.log(isOpen);
+
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    console.log("close2");
+    console.log(isOpen);
+  };
+
+
 
     return (
         <section className="relative w-full h-screen overflow-hidden  flex items-center">
             {/* Image de fond avec zoom lent (Ken Burns) */}
             <div
                 key={current} // force le remount => l'animation redémarre à chaque slide
-                className="absolute inset-0 bg-cover bg-center"
+                className="absolute inset-0 bg-contain bg-top"
                 style={{
-                    backgroundImage: `url(${SalaCine})`,
+                    backgroundImage: `url(${movie?.Poster ?? SalaCine})`,
                     animation: `ken-burns ${duration}s ease-out forwards`,
                 }}
             />
 
             {/* Voile sombre pour la lisibilité du texte */}
-            <div className="absolute inset-0 bg-linear-to-r from-black/60 via-black/20 to-transparent" />
-            <div className="absolute inset-0 z-10 bg-linear-to-t from-black/80 to-60%"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/50 to-transparent" />
+            <div className="absolute inset-0 z-10 bg-linear-to-t from-black to-80%"></div>
             {/* Contenu texte */}
             <div className='absolute w-screen h-screen z-20 p-16 flex flex-col items-center'>
                 <h1 className='text-6xl text-white my-auto font-bold text-shadow-[0_0_5px,0_0_10px,0_0_15px] text-shadow-pink-600/50 mt-40'>CinéExplorer</h1>
                 <div className='w-full text-white flex flex-col gap-2'>
-                    <span className="text-pink-500 text-xs font-bold tracking-widest">
-                        {movie.badge}
+                    <h1 className="text-white text-4xl font-bold ">{movie?.Title}</h1>
+                    <span className="text-pink-500 text-xs font-bold tracking-widest flex">
+                       <p className="text-white">Actors: </p><p className="text-md"> {movie?.Actors}</p>
                     </span>
-                    <h1 className="text-white text-4xl font-bold ">{movie.title}</h1>
-                    <p className='text-gray-200 text-sm w-80 wrap-break-word'>detmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmails</p>
-                    <p className='text-gray-200 text-sm w-80 wrap-break-word'>descmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmription</p>
-                    <BtnNeon width={160} title='Voir les détails' />
+                    <p className='text-gray-200 text-sm w-80 wrap-break-word'>{movie?.Year} | {movie?.Genre} | {movie?.Runtime} | &#11088; {movie?.imdbRating}/10</p>
+                    <p className='text-gray-200 text-sm w-80 wrap-break-word'>{movie?.Plot}</p>
+                    <BtnNeon  width={160} title='Voir les détails' onClick={handleOpen}/>
                 </div>
             </div>
 
@@ -88,6 +103,9 @@ export const Hero = () => {
                     />
                 ))}
             </div>
+            <>
+                    <MovieModal isOpen={isOpen} onClose={handleClose} movie={movie!} />
+                  </>
         </section>
     );
 };

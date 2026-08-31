@@ -190,3 +190,5 @@ pip-selfcheck.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/react,visualstudiocode,node,venv,dotenv
+
+temp_imdb/

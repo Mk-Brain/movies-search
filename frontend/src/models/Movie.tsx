@@ -1,8 +1,8 @@
 // To parse this data:
 //
-//   import { Convert, Welcome } from "./file";
+//   import { Convert, Movie } from "./file";
 //
-//   const welcome = Convert.toWelcome(json);
+//   const movie = Convert.toMovie(json);
 //
 // These functions will throw an error if the JSON doesn't
 // match the expected interface, even if the JSON is valid.
@@ -40,5 +40,3 @@ export interface Rating {
     Value:  string;
 }
 
-// Converts JSON strings to/from your types
-// and asserts the results of JSON.parse at runtime

@@ -1,7 +1,8 @@
 
-export const BtnNeon = ({ title, width }: { title: string, width: number }) => {
+export const BtnNeon = ({ title, width , onClick}: { title: string, width: number , onClick: ()=>void}) => {
   return (
-    <div className="relative flex">
+    <div onClick={onClick}
+    className="relative flex hover:cursor-pointer">
       <div style={{
         width: `${width}px`
       }} className={` h-10 border-2 bg-pink-800 border-pink-600 rounded-full shadow-[0_8px_8px] shadow-pink-800/20 z-30 flex items-center justify-center`}>
