@@ -1,0 +1,15 @@
+// src/components/OfflineBanner.tsx
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
+
+export default function OfflineBanner() {
+  const isOnline = useOnlineStatus();
+    console.log(isOnline);
+    
+  if (isOnline) return null;
+
+  return (
+    <div className="bg-red-600 text-white text-center py-2 px-4 fixed top-0 left-0 right-0 z-50 shadow-md">
+      Connexion Internet perdue. Vous naviguez actuellement en mode hors-ligne.
+    </div>
+  );
+}

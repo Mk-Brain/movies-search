@@ -3,11 +3,13 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 
 
 interface AppState {
+  isOnline: boolean
   loading: boolean
   error: string | null
 }
 
 const initialState: AppState = {
+  isOnline: false,
   loading: false,
   error: null,
 }
@@ -19,6 +21,9 @@ export const appStateSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
     },
+    setIsOnline: (state, action: PayloadAction<boolean>) => {
+      state.isOnline = action.payload
+    },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload
     },
@@ -26,6 +31,6 @@ export const appStateSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setLoading, setError } = appStateSlice.actions
+export const {setIsOnline, setLoading, setError } = appStateSlice.actions
 
 export default appStateSlice.reducer
