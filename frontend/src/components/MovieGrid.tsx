@@ -8,7 +8,8 @@ import type { RootState } from '../store/store';
 
 
 export const MovieGrid = () => {
-  const movies = useSelector((state: RootState) => state.movies.popularMovies)
+  const popularMovies = useSelector((state: RootState) => state.movies.popularMovies)
+  const searchResult = useSelector((state: RootState) => state.movies.resultSearch)
   const [movie, setMovie] = useState<Movie | null>(null)
 
   const [isOpen, setIsOpen] = useState(false);
@@ -25,12 +26,21 @@ export const MovieGrid = () => {
     console.log("close2");
     console.log(isOpen);
   };
+
+  console.log(searchResult.length);
+  
   return (
     <>
       <div className='flex flex-col gap-3'>
         <p className='text-white text-3xl'>Resultats de la recherche pour x</p>
         <div className='grid grid-cols-6 gap-8'>
-          {movies.map((movie) => {
+  
+          {searchResult.length === 0 ? popularMovies.map((movie) => {
+            setMovie(movie)
+            return (
+              <MovieCard key={movie.imdbID} movie={movie} handleOpen={handleOpen} />
+            )
+          }) : searchResult.map((movie) => {
             setMovie(movie)
             return (
               <MovieCard key={movie.imdbID} movie={movie} handleOpen={handleOpen} />

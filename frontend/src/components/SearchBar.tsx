@@ -32,8 +32,6 @@ export const SearchBar = () => {
 
     setParams(p)
 
-
-
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {

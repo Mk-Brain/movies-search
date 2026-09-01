@@ -14,14 +14,13 @@ export function usePopularMovie() {
     useEffect(() => {
         const url = `${API_BASE_URL}/movies/popular`;
         console.log(url);
-        
-        axios.get<Movie[]>(url)
+
+        axios.get<Movie[]>(url, { headers: { 'Accept': 'application/json' } })
             .then((response) => {
-                setMovies(response.data);
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                
                 console.log(response.data);
-                
+                setMovies(response.data);
+                console.log(">>p>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
             })
             .catch((e) => {
                 console.error('Erreur lors de la récupération des films:', e);
@@ -30,7 +29,7 @@ export function usePopularMovie() {
             .finally(() => {
                 setLoading(false);
             });
-    }, []); 
+    }, []);
 
     return { movies, loading, error };
 }

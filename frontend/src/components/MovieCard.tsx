@@ -12,7 +12,7 @@ export const MovieCard = ({ movie, handleOpen }: { movie: Movie, handleOpen:() =
         shadow-[0_2px_8px] shadow-black/70 hover:shadow-[0_2px_12px] hover:shadow-pink-700/50" 
         onClick={handleOpen}>
             <img
-                src={SalaCine}
+                src={movie?.Poster ?? SalaCine}
                 alt={movie.Title}
                 className="w-full h-3/4 object-cover rounded-lg"
             />

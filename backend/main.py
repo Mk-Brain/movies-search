@@ -26,9 +26,9 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown()
 
 origins = [
-    "http://localhost:5173",  # Port par défaut de Vite / React en dev
+    "http://localhost:5173",  
     "http://127.0.0.1:5173",
-    "https://cine-explorer-omega.vercel.app/",  # Ajoutez l'URL de prod de votre front ici
+    "https://cine-explorer-omega.vercel.app/",  
 ]
 
 
