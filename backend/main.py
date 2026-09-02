@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
 
 origins = [
     "http://localhost:5173",  
-    "https://cine-explorer-omega.vercel.app/",  
+    "https://cine-explorer-omega.vercel.app",  
 ]
 
 
