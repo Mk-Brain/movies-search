@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".env")
 
-from model.Movie import Movie
+from model.movie import Movie
 from database.database import Base, engine, SessionLocal
 
 from function.importdata import update_popular_movies_job
@@ -58,7 +58,7 @@ def check_health():
 @app.get("/movies/popular")
 def get_popular_movies(db: Session = Depends(get_db)):
     movies = db.query(Movie).all()
-    # Retourne uniquement le contenu du JSON brut
+    print(len(movies))
     return [movie.raw_data for movie in movies]
 
 @app.post("/movies/refresh-now")

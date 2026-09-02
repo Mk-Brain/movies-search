@@ -38,12 +38,12 @@ export const MovieGrid = () => {
           {searchResult.length === 0 ? popularMovies.map((movie) => {
             setMovie(movie)
             return (
-              <MovieCard key={movie.imdbID} movie={movie} handleOpen={handleOpen} />
+              <MovieCard key={movie.id} movie={movie} handleOpen={handleOpen} />
             )
           }) : searchResult.map((movie) => {
             setMovie(movie)
             return (
-              <MovieCard key={movie.imdbID} movie={movie} handleOpen={handleOpen} />
+              <MovieCard key={movie.id} movie={movie} handleOpen={handleOpen} />
             )
           })}
         </div>
