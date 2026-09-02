@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import type { URLParams } from '../models/urlParams';
 import { useMovie } from '../hooks/useMovie';
 import { useDispatch } from 'react-redux';
 import { setError, setLoading } from '../slice/appStateSlice';
@@ -11,26 +10,10 @@ import { saveSearchResults } from '../slice/movieSlice';
 export const SearchBar = () => {
   const [searchValue, setSearchValue] = useState<string>("")
   const [selected, setSelected] = useState(false)
-  const [params, setParams] = useState<URLParams>({
-    't': '',
-    'plot': 'full',
-    'r': 'json',
-    i: null,
-    type: null,
-    y: null
-  })
-  const { movies, loading, error } = useMovie(params)
+  
+  const { movies, loading, error } = useMovie(searchValue)
   function handleClick() {
-    const p: URLParams = {
-      't': searchValue,
-      'plot': 'full',
-      'r': 'json',
-      i: null,
-      type: null,
-      y: null
-    }
-
-    setParams(p)
+    
 
   }
 
@@ -47,9 +30,15 @@ export const SearchBar = () => {
     dispatch(setLoading(loading))
 
     dispatch(setError(error))
-
-    dispatch(saveSearchResults(movies))
-  }, [loading, error, dispatch, movies])
+    if(searchValue){
+      if(movies.length !==0){
+        dispatch(saveSearchResults(movies))
+      }
+    }else{
+      dispatch(saveSearchResults([]))
+    }
+    
+  }, [loading, error, dispatch, movies, searchValue])
 
   const activeStyle = selected ? "border-2 border-pink-800 shadow-[0_2px_12px] shadow-pink-700/50" : "border border-white"
   return (
@@ -83,4 +72,4 @@ export const SearchBar = () => {
   )
 }
 
-//TODO: ajouter un outlet pour l'affichage des résultats de recherche
+

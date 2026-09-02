@@ -32,7 +32,10 @@ export const MovieGrid = () => {
   return (
     <>
       <div className='flex flex-col gap-3'>
-        <p className='text-white text-3xl'>Resultats de la recherche pour x</p>
+        {searchResult.length > 0 ? (
+          <p className='text-white text-3xl'>Resultats de la recherche </p>
+        ) : (<p className='text-white text-3xl'>Films populaires </p>
+        )}
         <div className='grid grid-cols-6 gap-8'>
   
           {searchResult.length === 0 ? popularMovies.map((movie) => {

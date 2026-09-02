@@ -87,7 +87,7 @@ export const Hero = () => {
                     </span>
 
                     {/* Métadonnées : release_date, genres, runtime, vote_average */}
-                    <p className="text-gray-200 text-sm w-96 wrap-break-word">
+                    <p className="text-gray-200 text-sm w-xl wrap-break-word">
                         {releaseYear} | {genresList} {movie?.runtime ? `| ${movie?.runtime} min` : ""} | &#11088; {rating}/10
                     </p>
 
