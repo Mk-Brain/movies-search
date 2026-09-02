@@ -1,5 +1,6 @@
 import type { Movie } from "../models/Movie";
-import { IMAGE_BASE_URL } from "./globalVar";
+import { TMDB_POSTER_BASE } from "./globalVar";
+
 
 
 
@@ -11,7 +12,7 @@ export const getTmdbImageUrl = (
   size: 'w342' | 'w500' | 'w1280' | 'original' = 'w500'
 ): string => {
   if (!path) return '/placeholder-movie.png';
-  return `${IMAGE_BASE_URL}${size}${path}`;
+  return `${TMDB_POSTER_BASE}${size}${path}`;
 };
 
 // 2. Extraire le nom du réalisateur
@@ -26,4 +27,15 @@ export const formatRuntime = (runtimeMinutes: number | null): string => {
   const hours = Math.floor(runtimeMinutes / 60);
   const minutes = runtimeMinutes % 60;
   return `${hours}h ${minutes.toString().padStart(2, '0')}m`;
+};
+
+// Formater un montant brut en devises (ex: 165000000 -> 165 000 000 $)
+export const formatCurrency = (amount: number) => {
+  if (!amount || amount === 0) return 'N/A';
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
+};
+
+// Extraire des membres clés de l'équipe technique
+export const getCrewMember = (crew: Array<{ job: string; name: string }>, jobTitle: string) => {
+  return crew?.find((member) => member.job === jobTitle)?.name || 'N/A';
 };

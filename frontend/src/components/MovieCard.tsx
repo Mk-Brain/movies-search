@@ -1,9 +1,8 @@
 
 import SalaCine from '../assets/krists-luhaers-AtPWnYNDJnM-unsplash.jpg';
 import type { Movie } from '../models/Movie';
+import { TMDB_POSTER_BASE } from '../utils/globalVar';
 
-// Base URL pour les affiches TMDB (la taille w500 ou w342 est idéale pour les cartes)
-const TMDB_POSTER_BASE = 'https://image.tmdb.org/t/p/w500';
 
 export const MovieCard = ({
     movie,

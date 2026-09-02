@@ -5,7 +5,8 @@ import type { RootState } from "../store/store";
 
 import { MovieModal } from "./MovieModal";
 import type { Movie } from "../models/Movie";
-import { IMAGE_BASE_URL } from "../utils/globalVar";
+import { TMDB_POSTER_BASE } from "../utils/globalVar";
+
 
 
 
@@ -39,7 +40,7 @@ export const Hero = () => {
 
     // Formatage des données TMDB
     const backdropUrl = movie?.backdrop_path || movie?.poster_path 
-        ? `${IMAGE_BASE_URL}${movie.backdrop_path || movie.poster_path}` 
+        ? `${TMDB_POSTER_BASE}${movie.backdrop_path || movie.poster_path}` 
         : "/placeholder.jpg";
 
     const releaseYear = movie?.release_date ? movie.release_date.split("-")[0] : "";

@@ -1,27 +1,21 @@
 import React, { useRef } from 'react';
-
 import { Avatar } from './Avatar';
-import MovieStepper from './Stepper';
 import { BtnNeon } from './BtnNeon';
 import CancelIcon from '@mui/icons-material/Cancel';
 import type { Movie } from '../models/Movie';
+import { TMDB_AVATAR_BASE, TMDB_BACKDROP_BASE, TMDB_POSTER_BASE } from '../utils/globalVar';
+import { formatCurrency, getCrewMember } from '../utils/function';
 
-// URLs de base pour les images TMDB
-const TMDB_POSTER_BASE = 'https://image.tmdb.org/t/p/w500';
-const TMDB_AVATAR_BASE = 'https://image.tmdb.org/t/p/w185';
 
-export function MovieModal({
-  isOpen,
-  onClose,
-  movie,
-}: {
+
+
+export function MovieModal({isOpen, onClose, movie,}: {
   isOpen: boolean;
   onClose: () => void;
   movie: Movie | null;
 }) {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
-  // Gestion de l'ouverture et de la fermeture du dialog natif
   React.useEffect(() => {
     const dialogElement = dialogRef.current;
     if (!dialogElement) return;
@@ -35,18 +29,11 @@ export function MovieModal({
     }
   }, [isOpen]);
 
-  // Fermeture lors d'un clic sur l'arrière-plan (backdrop)
   const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
     if (e.target === dialogRef.current) {
       e.stopPropagation();
       onClose();
     }
-  };
-
-  // Fermeture via le bouton X
-  const handleCloseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    onClose();
   };
 
   if (!movie) return null;
@@ -55,103 +42,169 @@ export function MovieModal({
   const posterUrl = movie.poster_path
     ? `${TMDB_POSTER_BASE}${movie.poster_path}`
     : '/placeholder.jpg';
+
+  const backdropUrl = movie.backdrop_path
+    ? `${TMDB_BACKDROP_BASE}${movie.backdrop_path}`
+    : posterUrl;
+
   const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : '';
-  const genresList = movie.genres?.map((g) => g.name).join(', ') || '';
-  const runtimeText = movie.runtime ? `${movie.runtime} min` : 'N/A';
-  const ratingText = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
-  
-  // Récupération des 5 premiers acteurs du casting
-  const topCast = movie.credits?.cast?.slice(0, 5) || [];
-  const actorsSummary =
-    movie.credits?.cast?.slice(0, 3).map((a) => a.name).join(', ') || 'N/A';
+  const genresList = movie.genres?.map((g) => g.name).join(', ') || 'Cinéma';
+  const directorName = movie.credits?.crew?.find((c) => c.job === 'Director')?.name || 'Inconnu';
+
+  // Étoiles de notation sur 5
+  const ratingValue = movie.vote_average ? Math.round(movie.vote_average / 2) : 4;
+  const topCast = movie.credits?.cast?.slice(0, 2) || [];
 
   return (
     <dialog
       ref={dialogRef}
       onClose={onClose}
       onClick={handleBackdropClick}
-      className="top-0 z-50 w-screen h-screen bg-transparent backdrop-blur-xs hidden open:flex items-center justify-center m-0"
+      className="fixed inset-0 max-w-none max-h-none m-0 w-screen h-screen z-50  bg-black/50 backdrop-blur-md hidden open:flex items-center justify-center  border-none outline-none"
     >
       <div
-        className="flex flex-col w-[60vw] h-[80vh] rounded-xl overflow-hidden pb-3 border border-white bg-white/30 backdrop-blur-xs"
+        className="relative w-full max-w-3xl bg-white/20 border border-neutral-800 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-xl p-6 text-white overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="shrink-0 bg-transparent flex items-end pt-1 pr-2">
-          <button
-            type="button"
-            onClick={handleCloseClick}
-            className="rounded text-xl text-white/55 flex justify-end w-full cursor-pointer hover:text-white"
-            aria-label="Fermer la boîte de dialogue"
-          >
-            <CancelIcon />
-          </button>
-        </div>
+        {/* Bouton Fermer (X) en haut à droite */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer z-10"
+          aria-label="Fermer"
+        >
+          <CancelIcon fontSize="medium" />
+        </button>
 
-        <div className="flex gap-6 overflow-y-auto px-4 h-full">
-          {/* Affiche du film */}
-          <div className="flex flex-col w-3/7 h-3/4 shrink-0">
-            <img
-              className="w-full h-full object-cover rounded-md"
-              src={posterUrl}
-              alt={movie.title}
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
 
-          {/* Fiche d'information du film */}
-          <div className="flex-1 flex flex-col gap-3">
-            <h1 className="text-white text-4xl font-bold">{movie.title}</h1>
-
-            <span className="text-pink-500 text-xs font-bold tracking-widest flex items-center gap-1">
-              <p className="text-white">Acteurs: </p>
-              <p className="text-md">{actorsSummary}</p>
-            </span>
-
-            <p className="text-gray-200 text-sm w-80 wrap-break-word">
-              {releaseYear} | {genresList} | {runtimeText} | &#11088; {ratingText}/10
-            </p>
-
-            <p className="text-gray-200 text-sm w-80 wrap-break-word">
-              {movie.overview}
-            </p>
-
-            <h2 className="text-2xl text-white font-bold inline-block align-middle mt-2">
-              Casting Principal
-            </h2>
-
-            {/* Rendu dynamique des photos et noms d'acteurs depuis TMDB */}
-            <div className="flex gap-4 w-full overflow-x-auto py-2">
-              {topCast.map((actor) => {
-                const avatarUrl = actor.profile_path
-                  ? `${TMDB_AVATAR_BASE}${actor.profile_path}`
-                  : '/placeholder-avatar.jpg';
-
-                return (
-                  <div
-                    key={actor.id}
-                    className="flex flex-col items-center justify-center gap-1 min-w-[75px]"
-                  >
-                    <Avatar picture={avatarUrl} width={70} height={70} />
-                    <p className="text-xs font-semibold text-white text-center line-clamp-1 w-20">
-                      {actor.name}
-                    </p>
-                    <p className="text-[10px] text-gray-300 text-center line-clamp-1 w-20">
-                      {actor.character}
-                    </p>
-                  </div>
-                );
-              })}
+          {/* Colonne Gauche : Affiche principale + 3 petites vignettes */}
+          <div className="md:col-span-5 flex flex-col gap-3">
+            <div className="w-full h-[330px] rounded-xl overflow-hidden border border-neutral-800 shadow-lg">
+              <img
+                src={posterUrl}
+                alt={movie.title}
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            <MovieStepper />
-
-            <BtnNeon
-              width={250}
-              title="Voir la Bande d'annonce"
-              onClick={() => {
-                // Logique pour ouvrir le trailer YouTube TMDB
-              }}
-            />
+            {/* Rangée de 3 vignettes (Aperçus/Stills) */}
+            <div className="grid grid-cols-3 gap-2">
+              <img
+                src={backdropUrl}
+                alt="Still 1"
+                className="w-full h-14 object-cover rounded-lg border border-neutral-800/80 hover:opacity-80 transition-opacity cursor-pointer"
+              />
+              <img
+                src={posterUrl}
+                alt="Still 2"
+                className="w-full h-14 object-cover rounded-lg border border-neutral-800/80 hover:opacity-80 transition-opacity cursor-pointer"
+              />
+              <img
+                src={backdropUrl}
+                alt="Still 3"
+                className="w-full h-14 object-cover rounded-lg border border-neutral-800/80 hover:opacity-80 transition-opacity cursor-pointer"
+              />
+            </div>
           </div>
+
+          {/* Colonne Droite : Fiche descriptive */}
+          <div className="md:col-span-7 flex flex-col gap-3 pr-2">
+            {/* Titre (Année) */}
+            <h1 className="text-2xl font-bold tracking-wide text-white uppercase">
+              {movie.title} ({releaseYear})
+            </h1>
+{movie.tagline && (
+  <p className="text-pink-400 text-xs italic font-medium -mt-1 mb-1">
+    "{movie.tagline}"
+  </p>
+)}
+            {/* Note en étoiles + Genres + Réalisateur */}
+            <div className="flex items-center gap-2 text-xs text-amber-400 font-medium">
+              <span>{'★'.repeat(ratingValue)}{'☆'.repeat(5 - ratingValue)}</span>
+              <span className="text-gray-400 font-normal">
+                | {genresList} | Dir: {directorName}
+              </span>
+            </div>
+
+            {/* Synopsis */}
+            <p className="text-xs text-gray-300 leading-relaxed line-clamp-4">
+              {movie.overview || "Aucun résumé disponible pour ce film."}
+            </p>
+
+            {/* Section Casting Principal */}
+            <div className="mt-1">
+              <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                CASTING PRINCIPAL
+              </h2>
+              <div className="flex gap-4">
+                {topCast.map((actor) => (
+                  <div key={actor.id} className="flex flex-col items-center">
+                    <Avatar
+                      picture={
+                        actor.profile_path
+                          ? `${TMDB_AVATAR_BASE}${actor.profile_path}`
+                          : '/placeholder-avatar.jpg'
+                      }
+                      width={48}
+                      height={48}
+                    />
+                    <span className="text-[10px] text-gray-200 mt-1 font-medium text-center line-clamp-1 w-16">
+                      {actor.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+<div className="grid grid-cols-3 gap-2 bg-neutral-900/60 p-2 rounded-lg border border-neutral-800 text-center my-1">
+  <div>
+    <p className="text-[10px] text-gray-400">Budget</p>
+    <p className="text-xs font-semibold text-white">{formatCurrency(movie.budget)}</p>
+  </div>
+  <div>
+    <p className="text-[10px] text-gray-400">Recettes</p>
+    <p className="text-xs font-semibold text-green-400">{formatCurrency(movie.revenue)}</p>
+  </div>
+  <div>
+    <p className="text-[10px] text-gray-400">Avis</p>
+    <p className="text-xs font-semibold text-amber-400">{movie.vote_count?.toLocaleString('fr-FR')} votes</p>
+  </div>
+</div>
+
+<div className="text-xs text-gray-300 flex flex-col gap-1">
+  <p><span className="text-gray-400">Scénario :</span> {getCrewMember(movie.credits?.crew, 'Screenplay')}</p>
+  <p><span className="text-gray-400">Musique :</span> {getCrewMember(movie.credits?.crew, 'Original Music Composer')}</p>
+</div>
+
+{movie.production_companies && movie.production_companies.length > 0 && (
+  <div className="flex items-center gap-3 mt-2">
+    {movie.production_companies
+      .filter((company) => company.logo_path)
+      .slice(0, 3)
+      .map((company) => (
+        <img
+          key={company.id}
+          src={`https://image.tmdb.org/t/p/w92${company.logo_path}`}
+          alt={company.name}
+          className="h-5 object-contain brightness-200 opacity-70 hover:opacity-100 transition-opacity"
+          title={company.name}
+        />
+      ))}
+  </div>
+)}
+
+            {/* Bouton Néon Action */}
+            <div className="mt-2">
+              <BtnNeon
+                width={220}
+                title="VOIR BANDE-ANNONCE"
+                onClick={() => {
+                  // Action pour la bande-annonce
+                }}
+              />
+            </div>
+          </div>
+
         </div>
       </div>
     </dialog>

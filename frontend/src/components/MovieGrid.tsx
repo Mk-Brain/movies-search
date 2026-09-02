@@ -1,59 +1,55 @@
-import { MovieCard } from './MovieCard'
-import type { Movie } from '../models/Movie';
 import { useState } from 'react';
-import { MovieModal } from './MovieModal';
 import { useSelector } from 'react-redux';
+import { MovieCard } from './MovieCard';
+import { MovieModal } from './MovieModal';
 import type { RootState } from '../store/store';
-
+import type { Movie } from '../models/Movie';
 
 
 export const MovieGrid = () => {
-  const popularMovies = useSelector((state: RootState) => state.movies.popularMovies)
-  const searchResult = useSelector((state: RootState) => state.movies.resultSearch)
-  const [movie, setMovie] = useState<Movie | null>(null)
-
+  const popularMovies = useSelector((state: RootState) => state.movies.popularMovies);
+  const searchResult = useSelector((state: RootState) => state.movies.resultSearch);
+  
+  // État pour stocker le film actuellement sélectionné
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  //ouverture et fermeture du dialog
-  const handleOpen = () => {
+  // Ouverture de la modale avec enregistrement du film cliqué
+  const handleOpen = (movie: Movie) => {
+    setSelectedMovie(movie);
     setIsOpen(true);
-    console.log(isOpen);
-
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    console.log("close2");
-    console.log(isOpen);
+    setSelectedMovie(null);
   };
 
-  console.log(searchResult.length);
-  
+  // Sélection du tableau à afficher (résultats de recherche ou populaires)
+  const isSearching = searchResult && searchResult.length > 0;
+  const moviesToDisplay = isSearching ? searchResult : popularMovies;
+
   return (
-    <>
-      <div className='flex flex-col gap-3'>
-        {searchResult.length > 0 ? (
-          <p className='text-white text-3xl'>Resultats de la recherche </p>
-        ) : (<p className='text-white text-3xl'>Films populaires </p>
-        )}
-        <div className='grid grid-cols-6 gap-8'>
-  
-          {searchResult.length === 0 ? popularMovies.map((movie) => {
-            setMovie(movie)
-            return (
-              <MovieCard key={movie.id} movie={movie} handleOpen={handleOpen} />
-            )
-          }) : searchResult.map((movie) => {
-            setMovie(movie)
-            return (
-              <MovieCard key={movie.id} movie={movie} handleOpen={handleOpen} />
-            )
-          })}
-        </div>
+    <div className="flex flex-col gap-3">
+      <h2 className="text-white text-3xl font-bold">
+        {isSearching ? 'Résultats de la recherche' : 'Films populaires'}
+      </h2>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        {moviesToDisplay.map((movie) => (
+          <MovieCard
+            key={movie.id}
+            movie={movie}
+            handleOpen={() => handleOpen(movie)}
+          />
+        ))}
       </div>
-      <>
-        <MovieModal isOpen={isOpen} onClose={handleClose} movie={movie!} />
-      </>
-    </>
-  )
-}
+
+      <MovieModal
+        isOpen={isOpen}
+        onClose={handleClose}
+        movie={selectedMovie}
+      />
+    </div>
+  );
+};

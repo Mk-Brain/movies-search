@@ -32,8 +32,8 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown()
 
 origins = [
-    "http://localhost:5173",  
-    "https://cine-explorer-omega.vercel.app",  
+    "http://localhost:5173",
+    "https://cine-explorer-omega.vercel.app",
 ]
 
 
