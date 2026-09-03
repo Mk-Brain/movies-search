@@ -14,7 +14,7 @@ const getMovieTrailer = async (movieId: number): Promise<string | null> => {
   try {
     const response = await axios.get<{ youtube_url: string }>(`${API_BASE_URL}/movies/${movieId}/trailer`);
     console.log(response.data);
-    
+
     return response.data.youtube_url;
   } catch (error) {
     console.warn("Bande-annonce non disponible:", error);
@@ -22,7 +22,7 @@ const getMovieTrailer = async (movieId: number): Promise<string | null> => {
   }
 };
 
-export function MovieModal({isOpen, onClose, movie,}: {
+export function MovieModal({ isOpen, onClose, movie, }: {
   isOpen: boolean;
   onClose: () => void;
   movie: Movie | null;
@@ -63,20 +63,20 @@ export function MovieModal({isOpen, onClose, movie,}: {
   console.log("poster", posterUrl);
   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
   console.log(movie);
-  
+
   // 1. Titre original
-const originalTitle = movie.original_title || movie.title;
+  const originalTitle = movie.original_title || movie.title;
 
-// 2. Langue originale (ex: "en" -> "Anglais", "ja" -> "Japonais")
-const originalLanguage = movie.original_language
-  ? new Intl.DisplayNames(['fr'], { type: 'language' }).of(movie.original_language)
-  : 'Non spécifiée';
+  // 2. Langue originale (ex: "en" -> "Anglais", "ja" -> "Japonais")
+  const originalLanguage = movie.original_language
+    ? new Intl.DisplayNames(['fr'], { type: 'language' }).of(movie.original_language)
+    : 'Non spécifiée';
 
-// 3. Pays de production (ex: "United States of America, United Kingdom")
-const productionCountries =
-  movie.production_countries?.map((c) => c.name).join(', ') || 'Non spécifié';
+  // 3. Pays de production (ex: "United States of America, United Kingdom")
+  const productionCountries =
+    movie.production_countries?.map((c) => c.name).join(', ') || 'Non spécifié';
 
-  
+
 
   const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : '';
   const genresList = movie.genres?.map((g) => g.name).join(', ') || 'Cinéma';
@@ -86,21 +86,21 @@ const productionCountries =
   const ratingValue = movie.vote_average ? Math.round(movie.vote_average / 2) : 4;
   const topCast = movie.credits?.cast?.slice(0, 2) || [];
 
-// TODO: s'occuper du responsive
+  // TODO: s'occuper du responsive
 
-const handleWatchTrailer = async () => {
-  if (!movie?.id) return;
+  const handleWatchTrailer = async () => {
+    if (!movie?.id) return;
 
-  const trailerUrl = await getMovieTrailer(movie.id);
-  console.log(trailerUrl);
-  
-  if (trailerUrl) {
-    // Ouvre la vidéo YouTube dans un nouvel onglet
-    window.open(trailerUrl, '_blank', 'noopener,noreferrer');
-  } else {
-    alert("Désolé, aucune bande-annonce n'a été trouvée pour ce film.");
-  }
-};
+    const trailerUrl = await getMovieTrailer(movie.id);
+    console.log(trailerUrl);
+
+    if (trailerUrl) {
+      // Ouvre la vidéo YouTube dans un nouvel onglet
+      window.open(trailerUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      alert("Désolé, aucune bande-annonce n'a été trouvée pour ce film.");
+    }
+  };
   return (
     <dialog
       ref={dialogRef}
@@ -109,7 +109,7 @@ const handleWatchTrailer = async () => {
       className="fixed inset-0 max-w-none max-h-none m-0 w-screen h-screen z-50  bg-black/50 backdrop-blur-md hidden open:flex items-center justify-center  border-none outline-none"
     >
       <div
-        className="relative w-full max-w-3xl bg-white/20 border border-neutral-800 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-xl p-6 text-white overflow-hidden"
+        className="relative w-full max-w-4xl bg-white/20 border border-neutral-800 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-xl p-6 text-white overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Bouton Fermer (X) en haut à droite */}
@@ -160,11 +160,11 @@ const handleWatchTrailer = async () => {
             <h1 className="text-2xl font-bold tracking-wide text-white uppercase">
               {movie.title} ({releaseYear})
             </h1>
-{movie.tagline && (
-  <p className="text-pink-400 text-xs italic font-medium -mt-1 mb-1">
-    "{movie.tagline}"
-  </p>
-)}
+            {movie.tagline && (
+              <p className="text-pink-400 text-xs italic font-medium -mt-1 mb-1">
+                "{movie.tagline}"
+              </p>
+            )}
             {/* Note en étoiles + Genres + Réalisateur */}
             <div className="flex items-center gap-2 text-xs text-amber-400 font-medium">
               <span>{'★'.repeat(ratingValue)}{'☆'.repeat(5 - ratingValue)}</span>
@@ -178,27 +178,27 @@ const handleWatchTrailer = async () => {
               {movie.overview || "Aucun résumé disponible pour ce film."}
             </p>
             {/* ... sous le titre principal ... */}
-<div className="flex flex-col gap-1 text-xs text-gray-300 my-1">
-  
-  {/* Titre original (s'il est différent du titre fr) */}
-  {originalTitle !== movie.title && (
-    <p>
-      <span className="text-gray-400">Titre original :</span>{' '}
-      <span className="italic font-medium text-white">{originalTitle}</span>
-    </p>
-  )}
+            <div className="flex flex-col gap-1 text-xs text-gray-300 my-1">
 
-  {/* Langue originale & Pays de production */}
-  <p>
-    <span className="text-gray-400">Langue originale :</span>{' '}
-    <span className="capitalize font-medium text-white">{originalLanguage}</span>
-  </p>
+              {/* Titre original (s'il est différent du titre fr) */}
+              {originalTitle !== movie.title && (
+                <p>
+                  <span className="text-gray-400">Titre original :</span>{' '}
+                  <span className="italic font-medium text-white">{originalTitle}</span>
+                </p>
+              )}
 
-  <p>
-    <span className="text-gray-400">Pays de production :</span>{' '}
-    <span className="font-medium text-white">{productionCountries}</span>
-  </p>
-</div>
+              {/* Langue originale & Pays de production */}
+              <p>
+                <span className="text-gray-400">Langue originale :</span>{' '}
+                <span className="capitalize font-medium text-white">{originalLanguage}</span>
+              </p>
+
+              <p>
+                <span className="text-gray-400">Pays de production :</span>{' '}
+                <span className="font-medium text-white">{productionCountries}</span>
+              </p>
+            </div>
 
             {/* Section Casting Principal */}
             <div className="mt-1">
@@ -224,42 +224,42 @@ const handleWatchTrailer = async () => {
                 ))}
               </div>
             </div>
-<div className="grid grid-cols-3 gap-2 bg-neutral-900/60 p-2 rounded-lg border border-neutral-800 text-center my-1">
-  <div>
-    <p className="text-[10px] text-gray-400">Budget</p>
-    <p className="text-xs font-semibold text-white">{formatCurrency(movie.budget)}</p>
-  </div>
-  <div>
-    <p className="text-[10px] text-gray-400">Recettes</p>
-    <p className="text-xs font-semibold text-green-400">{formatCurrency(movie.revenue)}</p>
-  </div>
-  <div>
-    <p className="text-[10px] text-gray-400">Avis</p>
-    <p className="text-xs font-semibold text-amber-400">{movie.vote_count?.toLocaleString('fr-FR')} votes</p>
-  </div>
-</div>
+            <div className="grid grid-cols-3 gap-2 bg-neutral-900/60 p-2 rounded-lg border border-neutral-800 text-center my-1">
+              <div>
+                <p className="text-[10px] text-gray-400">Budget</p>
+                <p className="text-xs font-semibold text-white">{formatCurrency(movie.budget)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-gray-400">Recettes</p>
+                <p className="text-xs font-semibold text-green-400">{formatCurrency(movie.revenue)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-gray-400">Avis</p>
+                <p className="text-xs font-semibold text-amber-400">{movie.vote_count?.toLocaleString('fr-FR')} votes</p>
+              </div>
+            </div>
 
-<div className="text-xs text-gray-300 flex flex-col gap-1">
-  <p><span className="text-gray-400">Scénario :</span> {getCrewMember(movie.credits?.crew, 'Screenplay')}</p>
-  <p><span className="text-gray-400">Musique :</span> {getCrewMember(movie.credits?.crew, 'Original Music Composer')}</p>
-</div>
+            <div className="text-xs text-gray-300 flex flex-col gap-1">
+              <p><span className="text-gray-400">Scénario :</span> {getCrewMember(movie.credits?.crew, 'Screenplay')}</p>
+              <p><span className="text-gray-400">Musique :</span> {getCrewMember(movie.credits?.crew, 'Original Music Composer')}</p>
+            </div>
 
-{movie.production_companies && movie.production_companies.length > 0 && (
-  <div className="flex items-center gap-3 mt-2">
-    {movie.production_companies
-      .filter((company) => company.logo_path)
-      .slice(0, 3)
-      .map((company) => (
-        <img
-          key={company.id}
-          src={`https://image.tmdb.org/t/p/w92${company.logo_path}`}
-          alt={company.name}
-          className="h-5 object-contain brightness-200 opacity-70 hover:opacity-100 transition-opacity"
-          title={company.name}
-        />
-      ))}
-  </div>
-)}
+            {movie.production_companies && movie.production_companies.length > 0 && (
+              <div className="flex items-center gap-3 mt-2">
+                {movie.production_companies
+                  .filter((company) => company.logo_path)
+                  .slice(0, 3)
+                  .map((company) => (
+                    <img
+                      key={company.id}
+                      src={`https://image.tmdb.org/t/p/w92${company.logo_path}`}
+                      alt={company.name}
+                      className="h-5 object-contain brightness-200 opacity-70 hover:opacity-100 transition-opacity"
+                      title={company.name}
+                    />
+                  ))}
+              </div>
+            )}
 
             {/* Bouton Néon Action */}
             <div className="mt-2">
