@@ -97,3 +97,27 @@ async def search_movies(query: str):
             status_code=503, 
             detail=f"Erreur réseau lors de la communication avec TMDB: {exc}"
         )
+
+
+@app.get("/movies/{movie_id}/trailer")
+async def get_movie_trailer(movie_id: int):
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}/videos"
+    timeout = httpx.Timeout(10.0)
+
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        # 1. Recherche en français
+        res = await client.get(url, params={"api_key": TMDB_API_KEY, "language": "fr-FR"})
+        videos = res.json().get("results", [])
+        
+        trailer = next((v for v in videos if v.get("type") == "Trailer" and v.get("site") == "YouTube"), None)
+
+        # 2. Si non disponible en FR, recherche en anglais
+        if not trailer:
+            res_en = await client.get(url, params={"api_key": TMDB_API_KEY, "language": "en-US"})
+            videos_en = res_en.json().get("results", [])
+            trailer = next((v for v in videos_en if v.get("type") == "Trailer" and v.get("site") == "YouTube"), None)
+
+        if trailer:
+            return {"youtube_url": f"https://www.youtube.com/watch?v={trailer['key']}"}
+
+        raise HTTPException(status_code=404, detail="Bande-annonce introuvable")

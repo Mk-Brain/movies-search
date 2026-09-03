@@ -14,8 +14,17 @@ export const Hero = () => {
     const movies = useSelector((state: RootState) => state.movies.popularMovies);
     const isLoading = useSelector((state: RootState) => state.appState.loading);
     const [current, setCurrent] = useState(0);
-    // Durée de l'effet Ken Burns en secondes, pilotée par le slider (min 4s, max 20s)
-    const [duration, setDuration] = useState(10);
+    // État pour stocker le film actuellement sélectionné
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Ouverture de la modale avec enregistrement du film cliqué
+  const handleOpen = (movie: Movie | null) => {
+    setSelectedMovie(movie);
+    setIsOpen(true);
+  };
+      const handleClose = () => setIsOpen(false);
+    
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // Passage automatique au slide suivant, calé sur la durée du Ken Burns
@@ -24,19 +33,17 @@ export const Hero = () => {
 
         timerRef.current = setInterval(() => {
             setCurrent((prev) => (prev + 1) % movies.length);
-        }, duration * 1000);
+        }, 8 * 1000);
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [duration,  movies.length]);
+    }, [movies]);
 
     const movie: Movie | null = movies && movies.length > 0 ? movies[current] : null;
 
-    const [isOpen, setIsOpen] = useState(false);
 
-    const handleOpen = () => setIsOpen(true);
-    const handleClose = () => setIsOpen(false);
+
 
     // Formatage des données TMDB
     const backdropUrl = movie?.backdrop_path || movie?.poster_path 
@@ -64,7 +71,7 @@ export const Hero = () => {
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
                     backgroundImage: `url(${backdropUrl})`,
-                    animation: `ken-burns ${duration}s ease-out forwards`,
+                    animation: `ken-burns ${8}s ease-out forwards`,
                 }}
             />
 
@@ -97,25 +104,10 @@ export const Hero = () => {
                         {movie?.overview}
                     </p>
 
-                    <BtnNeon width={160} title="Voir les détails" onClick={handleOpen} />
+                    <BtnNeon width={160} title="Voir les détails" onClick={()=>handleOpen(movie)} />
                 </div>
             </div>
 
-            {/* Slider vertical de vitesse, à droite */}
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3">
-                <input
-                    type="range"
-                    min={4}
-                    max={20}
-                    value={duration}
-                    onChange={(e) => setDuration(Number(e.target.value))}
-                    className="h-32 accent-pink-600"
-                    style={{ writingMode: "vertical-lr", direction: "rtl" }}
-                />
-                <span className="text-white/70 text-[10px] text-center max-w-[80px]">
-                    Sliding animation sequence
-                </span>
-            </div>
 
             {/* Indicateurs de slides */}
             <div className="absolute bottom-4 left-10 z-10 flex gap-2">
@@ -130,7 +122,7 @@ export const Hero = () => {
                 ))}
             </div>
 
-            <MovieModal isOpen={isOpen} onClose={handleClose} movie={movie} />
+            <MovieModal isOpen={isOpen} onClose={handleClose} movie={selectedMovie} />
         </section>
     );
 };

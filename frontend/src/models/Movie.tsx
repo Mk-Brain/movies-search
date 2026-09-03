@@ -10,6 +10,11 @@ export interface ProductionCompany {
   origin_country: string;
 }
 
+export interface ProductionCountry {
+  iso_3166_1: string;
+  name: string;
+}
+
 export interface CastMember {
   id: number;
   name: string;
@@ -52,5 +57,7 @@ export interface Movie {
   status: string;
   genres: Genre[];
   production_companies: ProductionCompany[];
+  original_language: string;
+  production_countries: ProductionCountry[];
   credits: MovieCredits;
 }

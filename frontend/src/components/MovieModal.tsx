@@ -5,9 +5,22 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import type { Movie } from '../models/Movie';
 import { TMDB_AVATAR_BASE, TMDB_BACKDROP_BASE, TMDB_POSTER_BASE } from '../utils/globalVar';
 import { formatCurrency, getCrewMember } from '../utils/function';
+import axios from 'axios';
 
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
+const getMovieTrailer = async (movieId: number): Promise<string | null> => {
+  try {
+    const response = await axios.get<{ youtube_url: string }>(`${API_BASE_URL}/movies/${movieId}/trailer`);
+    console.log(response.data);
+    
+    return response.data.youtube_url;
+  } catch (error) {
+    console.warn("Bande-annonce non disponible:", error);
+    return null;
+  }
+};
 
 export function MovieModal({isOpen, onClose, movie,}: {
   isOpen: boolean;
@@ -47,6 +60,24 @@ export function MovieModal({isOpen, onClose, movie,}: {
     ? `${TMDB_BACKDROP_BASE}${movie.backdrop_path}`
     : posterUrl;
 
+  console.log("poster", posterUrl);
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+  console.log(movie);
+  
+  // 1. Titre original
+const originalTitle = movie.original_title || movie.title;
+
+// 2. Langue originale (ex: "en" -> "Anglais", "ja" -> "Japonais")
+const originalLanguage = movie.original_language
+  ? new Intl.DisplayNames(['fr'], { type: 'language' }).of(movie.original_language)
+  : 'Non spécifiée';
+
+// 3. Pays de production (ex: "United States of America, United Kingdom")
+const productionCountries =
+  movie.production_countries?.map((c) => c.name).join(', ') || 'Non spécifié';
+
+  
+
   const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : '';
   const genresList = movie.genres?.map((g) => g.name).join(', ') || 'Cinéma';
   const directorName = movie.credits?.crew?.find((c) => c.job === 'Director')?.name || 'Inconnu';
@@ -55,6 +86,21 @@ export function MovieModal({isOpen, onClose, movie,}: {
   const ratingValue = movie.vote_average ? Math.round(movie.vote_average / 2) : 4;
   const topCast = movie.credits?.cast?.slice(0, 2) || [];
 
+// TODO: s'occuper du responsive
+
+const handleWatchTrailer = async () => {
+  if (!movie?.id) return;
+
+  const trailerUrl = await getMovieTrailer(movie.id);
+  console.log(trailerUrl);
+  
+  if (trailerUrl) {
+    // Ouvre la vidéo YouTube dans un nouvel onglet
+    window.open(trailerUrl, '_blank', 'noopener,noreferrer');
+  } else {
+    alert("Désolé, aucune bande-annonce n'a été trouvée pour ce film.");
+  }
+};
   return (
     <dialog
       ref={dialogRef}
@@ -131,6 +177,28 @@ export function MovieModal({isOpen, onClose, movie,}: {
             <p className="text-xs text-gray-300 leading-relaxed line-clamp-4">
               {movie.overview || "Aucun résumé disponible pour ce film."}
             </p>
+            {/* ... sous le titre principal ... */}
+<div className="flex flex-col gap-1 text-xs text-gray-300 my-1">
+  
+  {/* Titre original (s'il est différent du titre fr) */}
+  {originalTitle !== movie.title && (
+    <p>
+      <span className="text-gray-400">Titre original :</span>{' '}
+      <span className="italic font-medium text-white">{originalTitle}</span>
+    </p>
+  )}
+
+  {/* Langue originale & Pays de production */}
+  <p>
+    <span className="text-gray-400">Langue originale :</span>{' '}
+    <span className="capitalize font-medium text-white">{originalLanguage}</span>
+  </p>
+
+  <p>
+    <span className="text-gray-400">Pays de production :</span>{' '}
+    <span className="font-medium text-white">{productionCountries}</span>
+  </p>
+</div>
 
             {/* Section Casting Principal */}
             <div className="mt-1">
@@ -198,9 +266,7 @@ export function MovieModal({isOpen, onClose, movie,}: {
               <BtnNeon
                 width={220}
                 title="VOIR BANDE-ANNONCE"
-                onClick={() => {
-                  // Action pour la bande-annonce
-                }}
+                onClick={handleWatchTrailer}
               />
             </div>
           </div>
